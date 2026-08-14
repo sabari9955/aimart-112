@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIMARTS — Security, Surveillance & Networking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-950:#060B14;
+  --navy-900:#0B1424;
+  --navy-800:#10192E;
+  --navy-700:#182238;
+  --line:#22304A;
+  --white:#FFFFFF;
+  --paper:#F5F7FA;
+  --ink:#0B1424;
+  --muted:#6B7A93;
+  --blue:#3B82F6;
+  --blue-bright:#5B9CFF;
+  --blue-dim:#1E3A6B;
+  --amber:#F5A623;
+  --green:#22C55E;
+  --red:#EF4444;
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;}
+img{max-width:100%;display:block;}
+:focus-visible{outline:2px solid var(--blue-bright);outline-offset:2px;}
+
+/* ===== App shell ===== */
+#app{max-width:1240px;margin:0 auto;min-height:100vh;position:relative;}
+
+/* ===== Header ===== */
+.topbar{
+  background:var(--navy-950);
+  color:var(--white);
+  font-size:12px;
+  padding:6px 20px;
+  display:flex;justify-content:space-between;
+  letter-spacing:.02em;
+  color:#9FB3D1;
+}
+header.main{
+  background:var(--navy-900);
+  color:var(--white);
+  padding:14px 20px;
+  display:flex;align-items:center;gap:20px;
+  position:sticky;top:0;z-index:50;
+  border-bottom:1px solid var(--line);
+}
+.logo{
+  font-family:'Sora',sans-serif;font-weight:800;font-size:22px;letter-spacing:.02em;
+  display:flex;align-items:center;gap:8px;flex-shrink:0;cursor:pointer;
+}
+.logo .dot{width:8px;height:8px;border-radius:50%;background:var(--blue-bright);box-shadow:0 0 10px var(--blue-bright);}
+.logo small{display:block;font-family:'Inter';font-weight:500;font-size:9px;color:#7C8FAE;letter-spacing:.16em;margin-top:-2px;}
+.search-wrap{flex:1;position:relative;display:none;}
+.search-wrap input{
+  width:100%;padding:11px 16px 11px 40px;border-radius:8px;border:1px solid var(--line);
+  background:var(--navy-800);color:var(--white);font-size:14px;
+}
+.search-wrap input::placeholder{color:#6B7A93;}
+.search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);}
+.nav-icons{display:flex;align-items:center;gap:18px;flex-shrink:0;}
+.nav-icons .navlink{display:none;font-size:14px;color:#C6D3EA;font-weight:500;}
+.icon-btn{position:relative;display:flex;align-items:center;color:var(--white);}
+.badge{
+  position:absolute;top:-6px;right:-8px;background:var(--blue-bright);color:var(--navy-950);
+  font-size:10px;font-weight:700;border-radius:50%;width:16px;height:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+@media(min-width:800px){
+  .search-wrap{display:block;}
+  .nav-icons .navlink{display:inline;}
+}
+
+/* ===== Bottom nav (mobile) ===== */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:60;
+  background:var(--navy-950);border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;padding:8px 0 10px;
+  max-width:1240px;margin:0 auto;
+}
+.bottom-nav button{
+  background:none;color:#7C8FAE;display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:10px;font-weight:600;letter-spacing:.02em;padding:4px 10px;
+}
+.bottom-nav button.active{color:var(--blue-bright);}
+@media(min-width:800px){.bottom-nav{display:none;}}
+
+main{padding-bottom:78px;}
+@media(min-width:800px){main{padding-bottom:40px;}}
+
+/* ===== Hero ===== */
+.hero{
+  background:
+    radial-gradient(circle at 85% 20%, rgba(59,130,246,.25), transparent 45%),
+    linear-gradient(180deg,var(--navy-950),var(--navy-900));
+  color:var(--white);padding:56px 20px 44px;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:34px 34px;pointer-events:none;
+}
+.hero-inner{position:relative;max-width:640px;}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue-bright);
+  letter-spacing:.22em;margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--blue-bright);}
+.hero h1{font-size:clamp(28px,6vw,44px);line-height:1.12;font-weight:800;margin-bottom:14px;}
+.hero h1 span{color:var(--blue-bright);}
+.hero p{color:#9FB3D1;font-size:15px;line-height:1.6;margin-bottom:26px;max-width:480px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn{
+  padding:13px 22px;border-radius:8px;font-weight:700;font-size:13.5px;letter-spacing:.01em;
+  display:inline-flex;align-items:center;gap:8px;transition:transform .15s, opacity .15s;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--blue-bright);color:var(--navy-950);}
+.btn-outline{background:transparent;color:var(--white);border:1px solid #33456B;}
+.btn-dark{background:var(--navy-950);color:var(--white);}
+.btn-block{width:100%;justify-content:center;}
+
+/* ===== Section ===== */
+.section{padding:36px 20px;}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
+.section-head h2{font-size:20px;font-weight:700;}
+.section-head a{font-size:12.5px;color:var(--blue);font-weight:600;}
+
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(min-width:700px){.cat-grid{grid-template-columns:repeat(6,1fr);}}
+.cat-card{
+  background:var(--white);border:1px solid #E4E9F0;border-radius:var(--radius);
+  padding:18px 10px;text-align:center;transition:border-color .15s;
+}
+.cat-card:hover{border-color:var(--blue);}
+.cat-card .icn{
+  width:38px;height:38px;margin:0 auto 10px;border-radius:9px;background:var(--blue-dim);
+  display:flex;align-items:center;justify-content:center;color:var(--blue-bright);
+}
+.cat-card span{font-size:12px;font-weight:600;color:var(--navy-800);}
+
+.prod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+@media(min-width:700px){.prod-grid{grid-template-columns:repeat(4,1fr);}}
+.card{
+  background:var(--white);border:1px solid #E4E9F0;border-radius:var(--radius);overflow:hidden;
+  display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .15s,transform .15s;
+}
+.card:hover{box-shadow:0 8px 22px rgba(11,20,36,.09);transform:translateY(-2px);}
+.card .thumb{
+  aspect-ratio:1/1;background:linear-gradient(135deg,#EEF2F8,#E4EAF3);
+  display:flex;align-items:center;justify-content:center;color:#9AA9C2;position:relative;
+}
+.stockpill{
+  position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:20px;
+}
+.stockpill.in{background:#DCF7E3;color:#0F7A37;}
+.stockpill.low{background:#FFF1D6;color:#93650B;}
+.card .body{padding:11px 12px 13px;display:flex;flex-direction:column;gap:4px;flex:1;}
+.brand{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.pname{font-size:13px;font-weight:600;line-height:1.35;color:var(--navy-900);}
+.stars{font-size:11px;color:var(--amber);}
+.price-row{display:flex;align-items:baseline;gap:6px;margin-top:2px;}
+.mrp{font-size:11px;color:var(--muted);text-decoration:line-through;}
+.sell{font-size:15px;font-weight:800;color:var(--navy-950);}
+.gstnote{font-size:9.5px;color:var(--muted);}
+.card-btns{display:flex;gap:6px;padding:0 12px 12px;}
+.card-btns button{flex:1;padding:8px 4px;border-radius:6px;font-size:11px;font-weight:700;}
+.b-cart{background:var(--navy-950);color:var(--white);}
+.b-buy{background:var(--blue-bright);color:var(--navy-950);}
+
+.strip{background:var(--navy-950);color:var(--white);}
+.strip .section-head h2{color:var(--white);}
+.strip .card{background:var(--navy-800);border-color:var(--line);}
+.strip .pname{color:var(--white);}
+.strip .sell{color:var(--white);}
+
+/* ===== Filters ===== */
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding:14px 20px 4px;}
+.chip{
+  flex-shrink:0;padding:8px 16px;border-radius:20px;background:var(--white);border:1px solid #DCE3ED;
+  font-size:12.5px;font-weight:600;color:var(--navy-800);
+}
+.chip.active{background:var(--navy-950);color:var(--white);border-color:var(--navy-950);}
+
+/* ===== Product detail ===== */
+.pd-wrap{padding:18px 20px 20px;display:grid;gap:24px;}
+@media(min-width:800px){.pd-wrap{grid-template-columns:1fr 1fr;}}
+.gallery-main{
+  aspect-ratio:1/1;background:linear-gradient(135deg,#EEF2F8,#E4EAF3);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;color:#9AA9C2;margin-bottom:10px;
+}
+.gallery-thumbs{display:flex;gap:8px;}
+.gallery-thumbs div{
+  width:56px;height:56px;border-radius:8px;background:#EEF2F8;border:1px solid #E4E9F0;
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--muted);font-weight:700;
+}
+.pd-info h1{font-size:20px;font-weight:700;margin:6px 0 8px;color:var(--navy-950);}
+.pd-meta{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:14px;flex-wrap:wrap;}
+.pd-meta b{color:var(--navy-900);}
+.price-box{background:var(--white);border:1px solid #E4E9F0;border-radius:10px;padding:16px;margin-bottom:16px;}
+.price-box .sell{font-size:26px;}
+.gst-line{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:5px 0;border-top:1px dashed #E4E9F0;margin-top:8px;}
+.pd-btns{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+.pd-btns .btn{flex:1;min-width:140px;}
+.specs-table{width:100%;border-collapse:collapse;font-size:13px;}
+.specs-table tr{border-bottom:1px solid #E9EDF3;}
+.specs-table td{padding:9px 0;}
+.specs-table td:first-child{color:var(--muted);width:40%;}
+.specs-table td:last-child{font-weight:600;}
+.tab-row{display:flex;gap:22px;border-bottom:1px solid #E4E9F0;margin:26px 0 16px;}
+.tab-row button{background:none;padding:10px 2px;font-size:13px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;}
+.tab-row button.active{color:var(--navy-950);border-color:var(--blue-bright);}
+
+/* ===== Cart ===== */
+.cart-item{display:flex;gap:12px;padding:14px;background:var(--white);border:1px solid #E4E9F0;border-radius:10px;margin-bottom:10px;align-items:center;}
+.cart-item .thumb{width:56px;height:56px;border-radius:8px;background:#EEF2F8;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#9AA9C2;}
+.cart-item .info{flex:1;min-width:0;}
+.cart-item .info .pname{margin-bottom:2px;}
+.qty-box{display:flex;align-items:center;border:1px solid #DCE3ED;border-radius:6px;}
+.qty-box button{width:26px;height:26px;background:var(--white);font-weight:700;color:var(--navy-800);}
+.qty-box span{width:26px;text-align:center;font-size:12px;font-weight:700;}
+.summary-box{background:var(--white);border:1px solid #E4E9F0;border-radius:10px;padding:18px;position:sticky;bottom:90px;}
+.summary-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;color:var(--muted);}
+.summary-row.total{font-size:16px;font-weight:800;color:var(--navy-950);border-top:1px solid #E4E9F0;padding-top:12px;margin-top:6px;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state .icn{width:60px;height:60px;border-radius:50%;background:#EEF2F8;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+
+.status-pill.pending{background:#FFF1D6;color:#93650B;}
+.status-pill.low{background:#FEE2E2;color:#B91C1C;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid.full{grid-template-columns:1fr;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{font-size:11.5px;font-weight:700;color:var(--navy-800);}
+.field input,.field select,.field textarea{
+  padding:10px 12px;border:1px solid #DCE3ED;border-radius:7px;font-size:13px;font-family:inherit;background:var(--white);
+}
+.field textarea{resize:vertical;min-height:70px;}
+
+.hide{display:none !important;}
+.section-title-sm{font-size:11px;letter-spacing:.14em;color:var(--muted);font-weight:700;text-transform:uppercase;margin:22px 0 4px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------------- MOCK DATA ---------------- */
+const CATEGORIES = [
+  {name:"CCTV Cameras", icon:"cam"},
+  {name:"NVR / DVR", icon:"disk"},
+  {name:"PoE Switches", icon:"switch"},
+  {name:"Network Switches", icon:"net"},
+  {name:"Accessories", icon:"cable"},
+  {name:"Storage", icon:"hdd"},
+];
+
+const PRODUCTS = [
+  {id:1, brand:"HIKVISION", name:"4MP IR Dome Network Camera DS-2CD1343G0-I", cat:"CCTV Cameras", mrp:5200, price:3799, gst:18, hsn:"85258990", stock:"in", rating:4.6, sku:"HIK-2CD1343-4MP", warranty:"2 Years", desc:"4MP fixed dome network camera with IR night vision up to 30m, H.265+ compression and weatherproof IP67 housing — built for continuous outdoor surveillance."},
+  {id:2, brand:"CP PLUS", name:"2MP Full HD Bullet Camera CP-UNC-TA21PL3", cat:"CCTV Cameras", mrp:3400, price:2599, gst:18, hsn:"85258990", stock:"in", rating:4.4, sku:"CPP-TA21PL3", warranty:"2 Years", desc:"2MP full HD bullet camera with smart IR up to 20m, ideal for entrance and perimeter monitoring in homes and small offices."},
+  {id:3, brand:"HIKVISION", name:"8CH Turbo HD DVR DS-7B08HGHI-K1", cat:"NVR / DVR", mrp:9800, price:7450, gst:18, hsn:"85219090", stock:"low", rating:4.7, sku:"HIK-7B08-8CH", warranty:"2 Years", desc:"8-channel Turbo HD DVR supporting up to 3MP resolution per channel, H.265+ compression and mobile remote viewing via Hik-Connect."},
+  {id:4, brand:"TP-LINK", name:"8-Port Gigabit PoE+ Switch TL-SG1008P", cat:"PoE Switches", mrp:8500, price:6299, gst:18, hsn:"85176290", stock:"in", rating:4.5, sku:"TPL-SG1008P", warranty:"3 Years", desc:"8-port unmanaged Gigabit switch with 4 PoE+ ports, 62W power budget — powers CCTV cameras and access points over a single cable."},
+  {id:5, brand:"D-LINK", name:"24-Port Gigabit Network Switch DGS-1024D", cat:"Network Switches", mrp:6200, price:4899, gst:18, hsn:"85176290", stock:"in", rating:4.3, sku:"DLK-1024D", warranty:"Lifetime", desc:"24-port unmanaged Gigabit desktop/rackmount switch built for high-throughput office and campus networks."},
+  {id:6, brand:"SEAGATE", name:"SkyHawk 2TB Surveillance HDD", cat:"Storage", mrp:6800, price:5399, gst:18, hsn:"84717020", stock:"in", rating:4.8, sku:"SGT-SKY-2TB", warranty:"3 Years", desc:"Purpose-built surveillance hard drive rated for 24x7 recording, optimised for up to 64 HD cameras with ImagePerfect firmware."},
+  {id:7, brand:"GENERIC", name:"CAT6 Outdoor Network Cable (90m box)", cat:"Accessories", mrp:2800, price:2199, gst:18, hsn:"85444299", stock:"in", rating:4.2, sku:"GEN-CAT6-90M", warranty:"1 Year", desc:"UV-resistant outdoor CAT6 cable, 90m box — solid copper conductors for reliable long-run PoE camera and network installs."},
+  {id:8, brand:"HIKVISION", name:"16CH NVR with 4 PoE Ports DS-7616NI-K2/16P", cat:"NVR / DVR", mrp:18500, price:14999, gst:18, hsn:"85219090", stock:"low", rating:4.7, sku:"HIK-7616-16P", warranty:"2 Years", desc:"16-channel NVR with 16 built-in PoE ports, supports up to 8MP resolution per channel and dual SATA bays for redundant storage."},
+];
+
+const ORDERS = [
+  {id:"AM1042", customer:"Ravi Kumar", amount:18499, status:"paid", date:"13 Aug"},
+  {id:"AM1041", customer:"Selvi Traders", amount:64200, status:"pending", date:"13 Aug"},
+  {id:"AM1040", customer:"Anbu Security Solutions", amount:9899, status:"paid", date:"12 Aug"},
+  {id:"AM1039", customer:"Muthu Electricals", amount:27650, status:"paid", date:"11 Aug"},
+];
+const ENQUIRIES = [
+  {name:"Karthik S", product:"16CH NVR + 8 Camera Kit", date:"14 Aug"},
+  {name:"Fathima Traders", product:"Bulk PoE Switch quote", date:"13 Aug"},
+];
+
+let cart = {}; // {productId: qty}
+let route = {page:"home", productId:null};
+
+/* ---------------- HELPERS ---------------- */
+const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+const findProd = id => PRODUCTS.find(p=>p.id==id);
+function gstSplit(price, gst, qty){
+  const taxable = price*qty;
+  const gstAmt = Math.round(taxable*gst/100);
+  return {taxable, gstAmt, total: taxable+gstAmt};
+}
+function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function addToCart(id){ cart[id]=(cart[id]||0)+1; render(); }
+function setQty(id,q){ if(q<=0){delete cart[id];}else{cart[id]=q;} render(); }
+
+function icon(name){
+  const icons = {
+    search:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+    cart:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"/><circle cx="19" cy="20" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+    user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    home:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+    grid:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+    box:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    img:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+    cam:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+    disk:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3"/></svg>',
+    switch:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="10" rx="2"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/></svg>',
+    net:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v6M12 13l-7 6M12 13l7 6"/></svg>',
+    cable:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9a3 3 0 0 1 3-3h1v3H7v6h1v3H7a3 3 0 0 1-3-3z"/><path d="M20 9a3 3 0 0 0-3-3h-1v3h1v6h-1v3h1a3 3 0 0 0 3-3z"/></svg>',
+    hdd:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="7" cy="12" r="1.5"/><line x1="12" y1="12" x2="18" y2="12"/></svg>',
+    order:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    quote:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>',
+    msg:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    settings:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    empty:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="20" r="1"/><circle cx="19" cy="20" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+    back:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>',
+  };
+  return icons[name]||'';
+}
+
+/* ---------------- RENDER: SITE HEADER ---------------- */
+function siteHeader(){
+  return `
+  <div class="topbar"><span>Free consultation for bulk & project orders</span><span>Chennai · Tamil Nadu</span></div>
+  <header class="main">
+    <div class="logo" onclick="go('home')"><span class="dot"></span>AIMARTS<small>SECURITY · SURVEILLANCE · NETWORKING</small></div>
+    <div class="search-wrap">
+      ${icon('search')}
+      <input placeholder="Search CCTV, NVR, PoE Switch, Networking…" />
+    </div>
+    <div class="nav-icons">
+      <a class="navlink" onclick="go('products')">Products</a>
+      <a class="navlink" onclick="go('products')">Get a Quote</a>
+      <a class="icon-btn" onclick="go('account')">${icon('user')}</a>
+      <a class="icon-btn" onclick="go('cart')">${icon('cart')}${cartCount()?`<span class="badge">${cartCount()}</span>`:''}</a>
+    </div>
+  </header>`;
+}
+
+function bottomNav(){
+  const items = [['home','home','Home'],['products','grid','Categories'],['cart','cart','Cart'],['orders','box','Orders'],['account','user','Account']];
+  return `<nav class="bottom-nav">${items.map(([p,i,l])=>`
+    <button class="${route.page===p?'active':''}" onclick="go('${p}')">${icon(i)}<span>${l}</span></button>`).join('')}
+  </nav>`;
+}
+
+/* ---------------- RENDER: HOME ---------------- */
+function pageHome(){
+  return `
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">SECURITY · SURVEILLANCE · NETWORKING</div>
+      <h1>Professional-grade protection for your <span>home, office & business.</span></h1>
+      <p>Genuine CCTV, NVR/DVR, PoE and networking equipment — sourced, installed and supported by AIMARTS across Tamil Nadu.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="go('products')">Shop Products →</button>
+        <button class="btn btn-outline" onclick="go('products')">Get a Quote</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Popular Categories</h2></div>
+    <div class="cat-grid">
+      ${CATEGORIES.map(c=>`
+        <div class="cat-card" onclick="go('products','${c.name}')">
+          <div class="icn">${icon(c.icon)}</div>
+          <span>${c.name}</span>
+        </div>`).join('')}
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:6px;">
+    <div class="section-head"><h2>Featured Products</h2><a onclick="go('products')">View all →</a></div>
+    <div class="prod-grid">${PRODUCTS.slice(0,4).map(productCard).join('')}</div>
+  </section>
+
+  <section class="section strip">
+    <div class="section-head"><h2>Best Sellers</h2><a onclick="go('products')" style="color:#5B9CFF">View all →</a></div>
+    <div class="prod-grid">${PRODUCTS.slice(4,8).map(productCard).join('')}</div>
+  </section>
+  `;
+}
+
+function productCard(p){
+  return `
+  <div class="card" onclick="go('product', ${p.id})">
+    <div class="thumb">
+      <span class="stockpill ${p.stock}">${p.stock==='in'?'In Stock':'Low Stock'}</span>
+      ${icon('img')}
+    </div>
+    <div class="body">
+      <div class="brand">${p.brand}</div>
+      <div class="pname">${p.name}</div>
+      <div class="stars">★★★★★ <span style="color:#9AA9C2">${p.rating}</span></div>
+      <div class="price-row"><span class="mrp">${inr(p.mrp)}</span><span class="sell">${inr(p.price)}</span></div>
+      <div class="gstnote">Incl. GST</div>
+    </div>
+    <div class="card-btns" onclick="event.stopPropagation()">
+      <button class="b-cart" onclick="addToCart(${p.id})">Add to Cart</button>
+      <button class="b-buy" onclick="addToCart(${p.id}); go('cart')">Buy Now</button>
+    </div>
+  </div>`;
+}
+
+/* ---------------- RENDER: PRODUCTS LISTING ---------------- */
+let activeCat = "All";
+function pageProducts(){
+  const cats = ["All", ...CATEGORIES.map(c=>c.name)];
+  const list = activeCat==="All" ? PRODUCTS : PRODUCTS.filter(p=>p.cat===activeCat);
+  return `
+  <div style="background:var(--white);padding:16px 20px 0;border-bottom:1px solid #E4E9F0;">
+    <h2 style="font-size:18px;font-weight:800;">All Products</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:2px;">${list.length} products</p>
+  </div>
+  <div class="filter-row">
+    ${cats.map(c=>`<button class="chip ${activeCat===c?'active':''}" onclick="setCat('${c}')">${c}</button>`).join('')}
+  </div>
+  <section class="section" style="padding-top:10px;">
+    <div class="prod-grid">${list.map(productCard).join('')}</div>
+  </section>`;
+}
+function setCat(c){ activeCat=c; render(); }
+
+/* ---------------- RENDER: PRODUCT DETAIL ---------------- */
+let pdTab = 'specs';
+function pageProduct(){
+  const p = findProd(route.productId);
+  if(!p) return `<div class="section">Product not found.</div>`;
+  const g = gstSplit(p.price, p.gst, 1);
+  return `
+  <div style="padding:14px 20px 0;">
+    <button class="btn btn-outline" style="padding:8px 14px;font-size:12px;" onclick="go('products')">${icon('back')} Back</button>
+  </div>
+  <div class="pd-wrap">
+    <div>
+      <div class="gallery-main">${icon('img')}</div>
+      <div class="gallery-thumbs">
+        ${['Front','Back','Side','Box','Specs'].map(l=>`<div>${l}</div>`).join('')}
+      </div>
+    </div>
+    <div class="pd-info">
+      <div class="brand">${p.brand}</div>
+      <h1>${p.name}</h1>
+      <div class="stars">★★★★★ <span style="color:#9AA9C2">${p.rating} rating</span></div>
+      <div class="pd-meta">
+        <span>SKU <b>${p.sku}</b></span>
+        <span>HSN <b>${p.hsn}</b></span>
+        <span>Warranty <b>${p.warranty}</b></span>
+      </div>
+      <div class="price-box">
+        <div class="price-row"><span class="mrp">${inr(p.mrp)}</span><span class="sell">${inr(p.price)}</span></div>
+        <span class="stockpill ${p.stock}" style="position:static;display:inline-block;margin-top:6px;">${p.stock==='in'?'In Stock':'Low Stock — order soon'}</span>
+        <div class="gst-line"><span>Taxable value</span><span>${inr(g.taxable)}</span></div>
+        <div class="gst-line"><span>GST (${p.gst}%)</span><span>${inr(g.gstAmt)}</span></div>
+        <div class="gst-line" style="font-weight:800;color:var(--navy-950);border-top:1px solid #E4E9F0;"><span>Total</span><span>${inr(g.total)}</span></div>
+      </div>
+      <div class="pd-btns">
+        <button class="btn b-cart" style="background:var(--navy-950);color:#fff;" onclick="addToCart(${p.id})">Add to Cart</button>
+        <button class="btn btn-primary" onclick="addToCart(${p.id}); go('cart')">Buy Now</button>
+        <button class="btn btn-outline" style="border-color:#DCE3ED;color:var(--navy-900);" onclick="alert('Opens WhatsApp chat with AIMARTS regarding: ${p.name}')">${icon('msg')} Enquire</button>
+      </div>
+
+      <div class="tab-row">
+        <button class="${pdTab==='specs'?'active':''}" onclick="setPdTab('specs')">Specifications</button>
+        <button class="${pdTab==='desc'?'active':''}" onclick="setPdTab('desc')">Description</button>
+        <button class="${pdTab==='ds'?'active':''}" onclick="setPdTab('ds')">Datasheet</button>
+      </div>
+      ${pdTab==='specs' ? `
+        <table class="specs-table">
+          <tr><td>Brand</td><td>${p.brand}</td></tr>
+          <tr><td>Model</td><td>${p.sku}</td></tr>
+          <tr><td>Category</td><td>${p.cat}</td></tr>
+          <tr><td>HSN Code</td><td>${p.hsn}</td></tr>
+          <tr><td>GST Rate</td><td>${p.gst}%</td></tr>
+          <tr><td>Warranty</td><td>${p.warranty}</td></tr>
+        </table>` : ''}
+      ${pdTab==='desc' ? `<p style="font-size:13.5px;line-height:1.7;color:var(--navy-800);">${p.desc}</p>` : ''}
+      ${pdTab==='ds' ? `<div class="upload-box">📄 datasheet_${p.sku}.pdf <br><span style="color:var(--blue);font-weight:700;">Download PDF</span></div>` : ''}
+
+      <div class="section-title-sm">Related Products</div>
+      <div class="prod-grid" style="margin-top:10px;">
+        ${PRODUCTS.filter(x=>x.cat===p.cat && x.id!==p.id).slice(0,2).map(productCard).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+function setPdTab(t){ pdTab=t; render(); }
+
+/* ---------------- RENDER: CART ---------------- */
+function pageCart(){
+  const ids = Object.keys(cart);
+  if(ids.length===0){
+    return `<div class="empty-state"><div class="icn">${icon('empty')}</div><h3 style="margin-bottom:6px;">Your cart is empty</h3>
+      <p style="font-size:13px;margin-bottom:18px;">Browse products and add items to get started.</p>
+      <button class="btn btn-primary" onclick="go('products')">Shop Products</button></div>`;
+  }
+  let subTotal=0, gstTotal=0;
+  const rows = ids.map(id=>{
+    const p = findProd(id); const qty = cart[id];
+    const g = gstSplit(p.price, p.gst, qty);
+    subTotal += g.taxable; gstTotal += g.gstAmt;
+    return `
+    <div class="cart-item">
+      <div class="thumb">${icon('img')}</div>
+      <div class="info">
+        <div class="brand">${p.brand}</div>
+        <div class="pname">${p.name}</div>
+        <div class="sell" style="font-size:14px;margin-top:3px;">${inr(p.price)}</div>
+      </div>
+      <div class="qty-box">
+        <button onclick="setQty(${p.id}, ${qty-1})">−</button>
+        <span>${qty}</span>
+        <button onclick="setQty(${p.id}, ${qty+1})">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  const total = subTotal+gstTotal;
+  return `
+  <div class="section">
+    <h2 style="font-size:19px;font-weight:800;margin-bottom:16px;">Your Cart (${cartCount()})</h2>
+    ${rows}
+    <div class="summary-box">
+      <div class="summary-row"><span>Subtotal</span><span>${inr(subTotal)}</span></div>
+      <div class="summary-row"><span>GST</span><span>${inr(gstTotal)}</span></div>
+      <div class="summary-row"><span>Delivery</span><span style="color:var(--green);font-weight:700;">Free</span></div>
+      <div class="summary-row total"><span>Total</span><span>${inr(total)}</span></div>
+      <button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="alert('Proceeds to Checkout → Payment → Order Confirmed')">Proceed to Checkout</button>
+    </div>
+  </div>`;
+}
+
+/* ---------------- ROUTER ---------------- */
+function go(page, param){
+  route.page = page;
+  if(page==='product') route.productId = param;
+  if(page==='products' && param) activeCat = param;
+  window.scrollTo(0,0);
+  render();
+}
+
+function render(){
+  const app = document.getElementById('app');
+  let body = '';
+  if(route.page==='home') body = pageHome();
+  else if(route.page==='products') body = pageProducts();
+  else if(route.page==='product') body = pageProduct();
+  else if(route.page==='cart') body = pageCart();
+  else if(route.page==='orders') body = `<div class="section"><h2 style="font-size:19px;font-weight:800;">My Orders</h2><p style="color:var(--muted);font-size:13px;margin-top:8px;">No orders yet — your placed orders will appear here.</p></div>`;
+  else if(route.page==='account') body = `<div class="section"><h2 style="font-size:19px;font-weight:800;margin-bottom:14px;">Account</h2>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:18px;">Sign in to view your orders, saved addresses and quotations.</p>
+    <div class="field"><label>Mobile Number</label><input placeholder="+91"></div>
+    <button class="btn btn-primary btn-block">Send OTP</button></div>`;
+
+  app.innerHTML = siteHeader() + `<main>${body}</main>` + bottomNav();
+}
+
+render();
+</script>
+</body>
+</html>

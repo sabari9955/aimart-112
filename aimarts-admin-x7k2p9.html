@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIMARTS Admin — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-950:#060B14; --navy-900:#0B1424; --navy-800:#10192E; --navy-700:#182238;
+  --line:#22304A; --white:#FFFFFF; --paper:#F5F7FA; --ink:#0B1424; --muted:#6B7A93;
+  --blue:#3B82F6; --blue-bright:#5B9CFF; --blue-dim:#1E3A6B;
+  --amber:#F5A623; --green:#22C55E; --red:#EF4444; --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;}
+img{max-width:100%;display:block;}
+:focus-visible{outline:2px solid var(--blue-bright);outline-offset:2px;}
+.btn{padding:11px 18px;border-radius:8px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:8px;transition:transform .15s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--blue-bright);color:var(--navy-950);}
+.btn-outline{background:transparent;border:1px solid #DCE3ED;color:var(--navy-900);}
+.btn-block{width:100%;justify-content:center;}
+.btn-danger{background:#FEE2E2;color:#B91C1C;}
+
+/* ===== LOGIN SCREEN ===== */
+#login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,.18), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(91,156,255,.12), transparent 45%),
+    var(--navy-950);
+}
+.login-card{
+  width:100%;max-width:380px;background:var(--navy-900);border:1px solid var(--line);
+  border-radius:14px;padding:36px 30px;color:var(--white);
+}
+.login-logo{display:flex;align-items:center;gap:8px;font-family:'Sora';font-weight:800;font-size:22px;margin-bottom:4px;}
+.login-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--blue-bright);box-shadow:0 0 10px var(--blue-bright);}
+.login-sub{font-size:11px;letter-spacing:.16em;color:#7C8FAE;font-weight:600;margin-bottom:30px;}
+.lock-badge{
+  width:44px;height:44px;border-radius:10px;background:var(--blue-dim);color:var(--blue-bright);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+}
+.login-card h2{font-size:18px;margin-bottom:6px;}
+.login-card p.desc{font-size:12.5px;color:#9FB3D1;margin-bottom:24px;line-height:1.5;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.field label{font-size:11.5px;font-weight:700;color:#C6D3EA;}
+.field input,.field select,.field textarea{
+  padding:11px 13px;border:1px solid #253552;border-radius:8px;font-size:13.5px;font-family:inherit;
+  background:var(--navy-800);color:var(--white);
+}
+.field input::placeholder{color:#5A6D8C;}
+.login-err{
+  background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#FCA5A5;
+  font-size:12px;padding:9px 12px;border-radius:7px;margin-bottom:14px;display:none;
+}
+.login-foot{margin-top:20px;font-size:11px;color:#5A6D8C;text-align:center;line-height:1.6;}
+
+/* ===== ADMIN SHELL ===== */
+#admin-screen{display:none;}
+.admin-shell{display:grid;grid-template-columns:1fr;min-height:100vh;}
+@media(min-width:900px){.admin-shell{grid-template-columns:224px 1fr;}}
+.admin-side{background:var(--navy-950);color:var(--white);padding:20px 14px;display:none;flex-direction:column;}
+@media(min-width:900px){.admin-side{display:flex;}}
+.admin-side .logo{display:flex;align-items:center;gap:8px;font-family:'Sora';font-weight:800;font-size:19px;margin-bottom:2px;padding:0 8px;}
+.admin-side .logo .dot{width:7px;height:7px;border-radius:50%;background:var(--blue-bright);}
+.admin-side .logo small{display:block;font-family:'Inter';font-weight:600;font-size:9px;color:#7C8FAE;letter-spacing:.14em;margin-top:-2px;}
+.nav-group-label{font-size:10px;letter-spacing:.12em;color:#4E5F7D;font-weight:700;text-transform:uppercase;margin:20px 10px 6px;}
+.admin-side nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:#9FB3D1;margin-bottom:1px;}
+.admin-side nav a:hover{background:var(--navy-800);color:var(--white);}
+.admin-side nav a.active{background:var(--navy-800);color:var(--white);box-shadow:inset 2px 0 0 var(--blue-bright);}
+.admin-side .foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);}
+.side-user{display:flex;align-items:center;gap:9px;padding:8px;font-size:12px;color:#C6D3EA;}
+.side-user .av{width:30px;height:30px;border-radius:50%;background:var(--blue-dim);color:var(--blue-bright);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;}
+.logout-btn{width:100%;margin-top:8px;background:none;color:#7C8FAE;font-size:12px;font-weight:700;text-align:left;padding:8px;border-radius:8px;display:flex;align-items:center;gap:8px;}
+.logout-btn:hover{background:var(--navy-800);color:#FCA5A5;}
+
+.admin-main{padding:18px 18px 100px;max-width:1180px;}
+.admin-topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.admin-topbar h1{font-size:20px;font-weight:800;}
+.admin-topbar .crumb{font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:3px;}
+
+/* mobile top bar for admin (since sidebar hidden) */
+.admin-mobtop{
+  display:flex;align-items:center;justify-content:space-between;background:var(--navy-950);color:var(--white);
+  padding:14px 16px;position:sticky;top:0;z-index:40;
+}
+@media(min-width:900px){.admin-mobtop{display:none;}}
+.admin-mobtop .logo{display:flex;align-items:center;gap:7px;font-family:'Sora';font-weight:800;font-size:16px;}
+.admin-mobtop .logo .dot{width:6px;height:6px;border-radius:50%;background:var(--blue-bright);}
+.hamburger{background:none;color:var(--white);padding:4px;}
+.mobile-drawer{
+  position:fixed;inset:0;z-index:80;display:none;
+}
+.mobile-drawer.open{display:block;}
+.mobile-drawer .scrim{position:absolute;inset:0;background:rgba(6,11,20,.6);}
+.mobile-drawer .panel{
+  position:absolute;top:0;left:0;bottom:0;width:82%;max-width:300px;background:var(--navy-950);color:var(--white);
+  padding:18px 14px;overflow-y:auto;
+}
+
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px;}
+@media(min-width:700px){.stat-grid{grid-template-columns:repeat(4,1fr);}}
+.stat-card{background:var(--white);border:1px solid #E4E9F0;border-radius:10px;padding:16px;}
+.stat-card .lbl{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;}
+.stat-card .val{font-size:24px;font-weight:800;}
+.stat-card .delta{font-size:11px;color:var(--green);font-weight:700;margin-top:4px;}
+.stat-card .delta.warn{color:var(--amber);}
+
+.panel{background:var(--white);border:1px solid #E4E9F0;border-radius:10px;padding:16px;margin-bottom:16px;}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.panel h3{font-size:14px;font-weight:700;}
+.table-wrap{overflow-x:auto;}
+table.admin-t{width:100%;border-collapse:collapse;font-size:12.5px;min-width:560px;}
+table.admin-t th{text-align:left;color:var(--muted);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;padding:8px 6px;border-bottom:1px solid #E4E9F0;white-space:nowrap;}
+table.admin-t td{padding:10px 6px;border-bottom:1px solid #F0F2F6;white-space:nowrap;}
+.status-pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.status-pill.paid,.status-pill.confirmed,.status-pill.active,.status-pill.completed{background:#DCF7E3;color:#0F7A37;}
+.status-pill.pending,.status-pill.low{background:#FFF1D6;color:#93650B;}
+.status-pill.cancelled,.status-pill.inactive{background:#FEE2E2;color:#B91C1C;}
+.row-actions{display:flex;gap:6px;}
+.row-actions button{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;background:#F0F2F6;color:var(--navy-800);}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+.field-lt label{font-size:11.5px;font-weight:700;color:var(--navy-800);}
+.field-lt input,.field-lt select,.field-lt textarea{
+  padding:10px 12px;border:1px solid #DCE3ED;border-radius:7px;font-size:13px;font-family:inherit;background:var(--white);width:100%;
+}
+.field-lt{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field-lt textarea{resize:vertical;min-height:70px;}
+.upload-box{border:1.5px dashed #C6D0E0;border-radius:8px;padding:22px;text-align:center;color:var(--muted);font-size:12px;background:#FAFBFD;cursor:pointer;}
+.toggle-row{display:flex;gap:18px;margin:10px 0 16px;flex-wrap:wrap;}
+.toggle-row label{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;}
+
+.tab-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;}
+.tab-row button{flex-shrink:0;padding:8px 15px;border-radius:20px;background:var(--white);border:1px solid #DCE3ED;font-size:12px;font-weight:700;color:var(--navy-800);}
+.tab-row button.active{background:var(--navy-950);color:var(--white);border-color:var(--navy-950);}
+
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(min-width:700px){.photo-grid{grid-template-columns:repeat(6,1fr);}}
+.photo-tile{aspect-ratio:1/1;border-radius:8px;background:linear-gradient(135deg,#EEF2F8,#E4EAF3);display:flex;align-items:center;justify-content:center;color:#9AA9C2;position:relative;font-size:10px;font-weight:700;}
+.photo-tile .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(11,20,36,.72);color:#fff;font-size:9.5px;padding:3px 6px;border-radius:0 0 8px 8px;}
+.photo-tile.add{border:1.5px dashed #C6D0E0;color:var(--muted);background:#FAFBFD;cursor:pointer;}
+
+.calendar-strip{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;}
+.day-card{flex-shrink:0;width:64px;border:1px solid #E4E9F0;border-radius:10px;padding:10px 0;text-align:center;background:var(--white);}
+.day-card.today{border-color:var(--blue-bright);background:var(--blue-dim);}
+.day-card .dow{font-size:10px;color:var(--muted);font-weight:700;}
+.day-card.today .dow{color:#BFD8FF;}
+.day-card .num{font-size:16px;font-weight:800;margin:4px 0;}
+.day-card.today .num{color:#fff;}
+.day-card .cnt{font-size:9.5px;color:var(--blue);font-weight:700;}
+.day-card.today .cnt{color:var(--blue-bright);}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;
+  padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.25);
+  display:none;
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><span class="dot"></span>AIMARTS</div>
+    <div class="login-sub">ADMIN CONTROL PANEL</div>
+    <div class="lock-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h2>Admin sign in</h2>
+    <p class="desc">This is a private, restricted area. Only authorised AIMARTS staff can access bookings, orders and store settings from here.</p>
+    <div class="login-err" id="loginErr">Incorrect email or password. Please try again.</div>
+    <div class="field"><label>Admin Email</label><input id="loginEmail" type="email" placeholder="admin@aimarts.in"></div>
+    <div class="field"><label>Password</label><input id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()"></div>
+    <button class="btn btn-primary btn-block" onclick="tryLogin()">Sign In</button>
+    <div class="login-foot">Demo credentials — admin@aimarts.in / aimarts@123<br>Every sign-in attempt is logged for security.</div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN SCREEN ===================== -->
+<div id="admin-screen">
+  <div class="admin-mobtop">
+    <div class="logo"><span class="dot"></span>AIMARTS ADMIN</div>
+    <button class="hamburger" onclick="toggleDrawer(true)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="mobile-drawer" id="drawer">
+    <div class="scrim" onclick="toggleDrawer(false)"></div>
+    <div class="panel" id="drawerPanel"></div>
+  </div>
+
+  <div class="admin-shell">
+    <div class="admin-side" id="sideNav"></div>
+    <div class="admin-main" id="mainContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= AUTH (front-end demo gate) ================= */
+const DEMO_USER = "admin@aimarts.in";
+const DEMO_PASS = "aimarts@123";
+
+function tryLogin(){
+  const e = document.getElementById('loginEmail').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  if(e===DEMO_USER && p===DEMO_PASS){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-screen').style.display='block';
+    renderAdmin();
+  } else {
+    err.style.display='block';
+  }
+}
+function logout(){
+  document.getElementById('admin-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
+}
+function toggleDrawer(open){
+  document.getElementById('drawer').classList.toggle('open', open);
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none', 2200);
+}
+
+/* ================= ICONS ================= */
+function icon(name){
+  const m = {
+    dashboard:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
+    box:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    order:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    booking:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    users:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    services:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg>',
+    photos:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+    quote:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>',
+    msg:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    content:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    settings:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    img:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+    logout:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></polyline></svg>',
+    plus:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  };
+  return m[name]||'';
+}
+
+/* ================= MOCK DATA ================= */
+const PRODUCTS = [
+  {name:"4MP IR Dome Camera DS-2CD1343G0-I", brand:"Hikvision", sku:"HIK-2CD1343-4MP", cat:"CCTV Cameras", mrp:5200, price:3799, gst:18, stock:24, status:"active"},
+  {name:"2MP Bullet Camera CP-UNC-TA21PL3", brand:"CP Plus", sku:"CPP-TA21PL3", cat:"CCTV Cameras", mrp:3400, price:2599, gst:18, stock:31, status:"active"},
+  {name:"8CH Turbo HD DVR DS-7B08HGHI-K1", brand:"Hikvision", sku:"HIK-7B08-8CH", cat:"NVR / DVR", mrp:9800, price:7450, gst:18, stock:4, status:"active"},
+  {name:"8-Port PoE+ Switch TL-SG1008P", brand:"TP-Link", sku:"TPL-SG1008P", cat:"PoE Switches", mrp:8500, price:6299, gst:18, stock:12, status:"active"},
+  {name:"16CH NVR 4-PoE DS-7616NI-K2/16P", brand:"Hikvision", sku:"HIK-7616-16P", cat:"NVR / DVR", mrp:18500, price:14999, gst:18, stock:3, status:"active"},
+];
+const ORDERS = [
+  {id:"AM1042", customer:"Ravi Kumar", amount:18499, status:"paid", date:"13 Aug"},
+  {id:"AM1041", customer:"Selvi Traders", amount:64200, status:"pending", date:"13 Aug"},
+  {id:"AM1040", customer:"Anbu Security Solutions", amount:9899, status:"paid", date:"12 Aug"},
+];
+const BOOKINGS = [
+  {id:"BK-0118", customer:"Karthik S", service:"Site Survey — CCTV Installation", date:"15 Aug, 11:00 AM", status:"confirmed"},
+  {id:"BK-0117", customer:"Meena Textiles", service:"NVR Configuration & Setup", date:"15 Aug, 3:30 PM", status:"pending"},
+  {id:"BK-0116", customer:"Fathima Traders", service:"Annual Maintenance Visit", date:"14 Aug, 10:00 AM", status:"completed"},
+  {id:"BK-0115", customer:"Ganesh Motors", service:"Network Cabling Consultation", date:"13 Aug, 2:00 PM", status:"cancelled"},
+];
+const CUSTOMERS = [
+  {name:"Ravi Kumar", phone:"+91 98400 11122", orders:3, bookings:1, spent:41200},
+  {name:"Selvi Traders", phone:"+91 90031 44556", orders:2, bookings:2, spent:98500},
+  {name:"Anbu Security Solutions", phone:"+91 97891 22334", orders:5, bookings:0, spent:126400},
+  {name:"Karthik S", phone:"+91 96771 09988", orders:0, bookings:1, spent:0},
+];
+const SERVICES = [
+  {name:"CCTV Site Survey", duration:"45 min", price:0, note:"Free for orders above ₹15,000", status:"active"},
+  {name:"Installation — up to 4 cameras", duration:"2–3 hrs", price:2500, status:"active"},
+  {name:"NVR/DVR Configuration", duration:"1 hr", price:800, status:"active"},
+  {name:"Annual Maintenance Contract", duration:"—", price:6000, status:"active"},
+  {name:"Network Cabling (per point)", duration:"—", price:450, status:"inactive"},
+];
+const ENQUIRIES = [
+  {name:"Karthik S", topic:"16CH NVR + 8 Camera Kit", date:"14 Aug"},
+  {name:"Fathima Traders", topic:"Bulk PoE Switch quote", date:"13 Aug"},
+];
+const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+
+/* ================= NAV STRUCTURE ================= */
+const NAV = [
+  {group:"Overview", items:[["dashboard","dashboard","Dashboard"]]},
+  {group:"Commerce", items:[["products","box","Products"],["orders","order","Orders"],["quotations","quote","Quotations"]]},
+  {group:"Services", items:[["bookings","booking","Bookings"],["services","services","Services"],["customers","users","Customers"],["enquiries","msg","Enquiries"]]},
+  {group:"Website", items:[["photos","photos","Photo Gallery"],["content","content","Website Content"],["settings","settings","Settings"]]},
+];
+let adminPage = "dashboard";
+
+function navHTML(){
+  return NAV.map(g=>`
+    <div class="nav-group-label">${g.group}</div>
+    <nav>${g.items.map(([p,i,l])=>`<a class="${adminPage===p?'active':''}" onclick="goAdmin('${p}')">${icon(i)} ${l}</a>`).join('')}</nav>
+  `).join('');
+}
+
+function goAdmin(p){
+  adminPage = p;
+  toggleDrawer(false);
+  window.scrollTo(0,0);
+  renderAdmin();
+}
+
+function renderAdmin(){
+  document.getElementById('sideNav').innerHTML = `
+    <div class="logo"><span class="dot"></span>AIMARTS<small>ADMIN PANEL</small></div>
+    ${navHTML()}
+    <div class="foot">
+      <div class="side-user"><div class="av">AD</div><div><div style="font-weight:700;color:#fff;">Admin User</div><div style="font-size:10.5px;color:#7C8FAE;">admin@aimarts.in</div></div></div>
+      <button class="logout-btn" onclick="logout()">${icon('logout')} Sign out</button>
+    </div>`;
+  document.getElementById('drawerPanel').innerHTML = `
+    <div class="logo" style="margin-bottom:18px;"><span class="dot"></span>AIMARTS<small>ADMIN PANEL</small></div>
+    ${navHTML()}
+    <button class="logout-btn" onclick="logout()" style="margin-top:16px;">${icon('logout')} Sign out</button>`;
+
+  let body = '';
+  if(adminPage==='dashboard') body = pgDashboard();
+  else if(adminPage==='products') body = pgProducts();
+  else if(adminPage==='new-product') body = pgNewProduct();
+  else if(adminPage==='orders') body = pgOrders();
+  else if(adminPage==='quotations') body = pgQuotations();
+  else if(adminPage==='bookings') body = pgBookings();
+  else if(adminPage==='services') body = pgServices();
+  else if(adminPage==='customers') body = pgCustomers();
+  else if(adminPage==='enquiries') body = pgEnquiries();
+  else if(adminPage==='photos') body = pgPhotos();
+  else if(adminPage==='content') body = pgContent();
+  else if(adminPage==='settings') body = pgSettings();
+  document.getElementById('mainContent').innerHTML = body;
+}
+
+/* ================= PAGES ================= */
+function pgDashboard(){
+  return `
+  <div class="admin-topbar">
+    <div><div class="crumb">Overview</div><h1>Dashboard</h1></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-outline" onclick="goAdmin('bookings')">${icon('booking')} View Bookings</button>
+      <button class="btn btn-primary" onclick="goAdmin('new-product')">${icon('plus')} Add Product</button>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="lbl">Total Products</div><div class="val">${PRODUCTS.length+37}</div><div class="delta">+2 this week</div></div>
+    <div class="stat-card"><div class="lbl">Orders (30d)</div><div class="val">61</div><div class="delta">+12% MoM</div></div>
+    <div class="stat-card"><div class="lbl">Bookings (30d)</div><div class="val">${BOOKINGS.length+14}</div><div class="delta">+5 this week</div></div>
+    <div class="stat-card"><div class="lbl">Pending Payments</div><div class="val">${inr(64200)}</div><div class="delta warn">1 order</div></div>
+  </div>
+
+  <div class="calendar-strip">
+    ${['Mon 11','Tue 12','Wed 13','Thu 14','Fri 15','Sat 16','Sun 17'].map((d,i)=>{
+      const [dow,num] = d.split(' ');
+      return `<div class="day-card ${i===3?'today':''}"><div class="dow">${dow}</div><div class="num">${num}</div><div class="cnt">${i===3?'3 bookings':i===4?'2 bookings':i===1?'1 booking':'—'}</div></div>`;
+    }).join('')}
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>Recent Orders</h3><a onclick="goAdmin('orders')" style="font-size:11.5px;color:var(--blue);font-weight:700;">View all →</a></div>
+    <div class="table-wrap"><table class="admin-t"><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+    ${ORDERS.map(o=>`<tr><td class="mono">${o.id}</td><td>${o.customer}</td><td>${inr(o.amount)}</td><td><span class="status-pill ${o.status}">${o.status}</span></td><td>${o.date}</td></tr>`).join('')}
+    </table></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Upcoming Bookings</h3><a onclick="goAdmin('bookings')" style="font-size:11.5px;color:var(--blue);font-weight:700;">View all →</a></div>
+    <div class="table-wrap"><table class="admin-t"><tr><th>Booking</th><th>Customer</th><th>Service</th><th>When</th><th>Status</th></tr>
+    ${BOOKINGS.filter(b=>b.status!=='cancelled').map(b=>`<tr><td class="mono">${b.id}</td><td>${b.customer}</td><td>${b.service}</td><td>${b.date}</td><td><span class="status-pill ${b.status}">${b.status}</span></td></tr>`).join('')}
+    </table></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Low Stock Products</h3></div>
+    <div class="table-wrap"><table class="admin-t"><tr><th>Product</th><th>SKU</th><th>Stock</th></tr>
+    ${PRODUCTS.filter(p=>p.stock<10).map(p=>`<tr><td>${p.name}</td><td class="mono">${p.sku}</td><td><span class="status-pill low">${p.stock} left</span></td></tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+
+function pgProducts(){
+  return `
+  <div class="admin-topbar">
+    <div><div class="crumb">Commerce</div><h1>Products</h1></div>
+    <button class="btn btn-primary" onclick="goAdmin('new-product')">${icon('plus')} Add Product</button>
+  </div>
+  <div class="panel"><div class="table-wrap">
+    <table class="admin-t"><tr><th>Product</th><th>Category</th><th>SKU</th><th>MRP</th><th>Price</th><th>GST</th><th>Stock</th><th>Status</th><th></th></tr>
+    ${PRODUCTS.map(p=>`<tr>
+      <td>${p.brand} — ${p.name.slice(0,30)}${p.name.length>30?'…':''}</td><td>${p.cat}</td><td class="mono">${p.sku}</td>
+      <td>${inr(p.mrp)}</td><td>${inr(p.price)}</td><td>${p.gst}%</td>
+      <td><span class="status-pill ${p.stock<10?'low':'active'}">${p.stock}</span></td>
+      <td><span class="status-pill active">Active</span></td>
+      <td><div class="row-actions"><button onclick="showToast('Editing ${p.sku}')">Edit</button></div></td>
+    </tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+
+function pgNewProduct(){
+  return `
+  <div class="admin-topbar">
+    <div><div class="crumb">Commerce · Products</div><h1>Add Product</h1></div>
+    <button class="btn btn-outline" onclick="goAdmin('products')">Cancel</button>
+  </div>
+  <div class="panel">
+    <div class="form-grid">
+      <div class="field-lt"><label>Product Name</label><input placeholder="e.g. 4MP IR Dome Network Camera"></div>
+      <div class="field-lt"><label>Brand</label><input placeholder="e.g. Hikvision"></div>
+      <div class="field-lt"><label>Category</label><select><option>CCTV Cameras</option><option>NVR / DVR</option><option>PoE Switches</option><option>Network Switches</option><option>Accessories</option><option>Storage</option></select></div>
+      <div class="field-lt"><label>SKU</label><input placeholder="Auto-generated or custom"></div>
+      <div class="field-lt"><label>HSN Code</label><input placeholder="e.g. 85258990"></div>
+      <div class="field-lt"><label>GST %</label><select><option>0%</option><option>5%</option><option>12%</option><option selected>18%</option><option>28%</option></select></div>
+      <div class="field-lt"><label>MRP (₹)</label><input type="number" placeholder="0.00"></div>
+      <div class="field-lt"><label>Selling Price (₹)</label><input type="number" placeholder="0.00"></div>
+      <div class="field-lt"><label>Stock Quantity</label><input type="number" placeholder="0"></div>
+      <div class="field-lt"><label>Warranty</label><input placeholder="e.g. 2 Years"></div>
+    </div>
+    <div class="field-lt"><label>Description</label><textarea placeholder="Shown on the product page…"></textarea></div>
+    <div class="field-lt"><label>Specifications (key: value, one per line)</label><textarea placeholder="Resolution: 4MP&#10;Night Vision: 30m IR"></textarea></div>
+    <div class="field-lt"><label>Product Images</label><div class="upload-box">${icon('img')}<br>Drag & drop images, or click to upload<br><span style="font-size:11px;">Label each: Front · Back · Side · Box · Specification</span></div></div>
+    <div class="field-lt"><label>Datasheet (PDF)</label><div class="upload-box">📄 Click to upload datasheet PDF</div></div>
+    <div class="toggle-row"><label><input type="checkbox"> Featured Product</label><label><input type="checkbox" checked> Active on website</label></div>
+    <button class="btn btn-primary" onclick="showToast('Product saved — now live on aimarts.in'); goAdmin('products')">Save Product</button>
+  </div>`;
+}
+
+function pgOrders(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Commerce</div><h1>Orders</h1></div></div>
+  <div class="panel"><div class="table-wrap">
+    <table class="admin-t"><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Payment</th><th>Delivery</th><th>Date</th><th></th></tr>
+    ${ORDERS.map(o=>`<tr><td class="mono">${o.id}</td><td>${o.customer}</td><td>${inr(o.amount)}</td>
+      <td><span class="status-pill ${o.status}">${o.status}</span></td><td>${o.status==='paid'?'Processing':'Awaiting payment'}</td><td>${o.date}</td>
+      <td><div class="row-actions"><button onclick="showToast('Opening order ${o.id}')">View</button></div></td></tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+
+function pgQuotations(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Commerce</div><h1>Quotations</h1></div>
+    <button class="btn btn-primary" onclick="showToast('New quotation form opened')">${icon('plus')} New Quotation</button></div>
+  <div class="panel">
+    <h3 style="margin-bottom:12px;">Build a Quotation</h3>
+    <div class="form-grid">
+      <div class="field-lt"><label>Customer Name</label><input placeholder="e.g. Selvi Traders"></div>
+      <div class="field-lt"><label>Phone / Email</label><input placeholder="+91"></div>
+    </div>
+    <div class="table-wrap"><table class="admin-t"><tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th></tr>
+      <tr><td>Hikvision 4MP IR Dome Camera</td><td>8</td><td>₹3,799</td><td>18%</td><td>₹35,865</td></tr>
+      <tr><td>Hikvision 16CH NVR (4 PoE)</td><td>1</td><td>₹14,999</td><td>18%</td><td>₹17,699</td></tr>
+      <tr><td>Installation — up to 4 cameras</td><td>2</td><td>₹2,500</td><td>18%</td><td>₹5,900</td></tr>
+    </table></div>
+    <div style="text-align:right;font-weight:800;font-size:16px;margin:14px 0;">Grand Total: ₹59,464</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="showToast('Quotation sent to customer')">Generate & Send Quote</button>
+      <button class="btn btn-outline">Preview PDF</button>
+    </div>
+  </div>
+  <div class="panel"><h3 style="margin-bottom:12px;">Recent Quotations</h3>
+    <div class="table-wrap"><table class="admin-t"><tr><th>Quote #</th><th>Customer</th><th>Amount</th><th>Status</th></tr>
+      <tr><td class="mono">QT-0231</td><td>Selvi Traders</td><td>₹69,963</td><td><span class="status-pill pending">Sent</span></td></tr>
+      <tr><td class="mono">QT-0230</td><td>Anbu Security</td><td>₹18,240</td><td><span class="status-pill active">Accepted</span></td></tr>
+    </table></div>
+  </div>`;
+}
+
+let bookingFilter = "all";
+function pgBookings(){
+  const filters = ["all","confirmed","pending","completed","cancelled"];
+  const list = bookingFilter==='all' ? BOOKINGS : BOOKINGS.filter(b=>b.status===bookingFilter);
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Services</div><h1>Bookings</h1></div>
+    <button class="btn btn-primary" onclick="showToast('New booking form opened')">${icon('plus')} New Booking</button></div>
+  <div class="tab-row">${filters.map(f=>`<button class="${bookingFilter===f?'active':''}" onclick="setBookingFilter('${f}')">${f[0].toUpperCase()+f.slice(1)}</button>`).join('')}</div>
+  <div class="panel"><div class="table-wrap">
+    <table class="admin-t"><tr><th>Booking</th><th>Customer</th><th>Service</th><th>Date & Time</th><th>Status</th><th></th></tr>
+    ${list.map(b=>`<tr><td class="mono">${b.id}</td><td>${b.customer}</td><td>${b.service}</td><td>${b.date}</td>
+      <td><span class="status-pill ${b.status}">${b.status}</span></td>
+      <td><div class="row-actions">
+        ${b.status==='pending'?`<button onclick="showToast('${b.id} confirmed')">Confirm</button>`:''}
+        <button onclick="showToast('Opening ${b.id}')">View</button>
+      </div></td></tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+function setBookingFilter(f){ bookingFilter=f; renderAdmin(); }
+
+function pgServices(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Services</div><h1>Services</h1></div>
+    <button class="btn btn-primary" onclick="showToast('New service form opened')">${icon('plus')} Add Service</button></div>
+  <div class="panel"><div class="table-wrap">
+    <table class="admin-t"><tr><th>Service</th><th>Duration</th><th>Price</th><th>Status</th><th></th></tr>
+    ${SERVICES.map(s=>`<tr><td>${s.name}</td><td>${s.duration}</td><td>${s.price===0?'Free':inr(s.price)}${s.note?` <span style="color:var(--muted);font-size:10.5px;">(${s.note})</span>`:''}</td>
+      <td><span class="status-pill ${s.status}">${s.status}</span></td>
+      <td><div class="row-actions"><button onclick="showToast('Editing '+'${s.name}')">Edit</button></div></td></tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+
+function pgCustomers(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Services</div><h1>Customers</h1></div></div>
+  <div class="panel"><div class="table-wrap">
+    <table class="admin-t"><tr><th>Name</th><th>Phone</th><th>Orders</th><th>Bookings</th><th>Total Spent</th><th></th></tr>
+    ${CUSTOMERS.map(c=>`<tr><td>${c.name}</td><td class="mono">${c.phone}</td><td>${c.orders}</td><td>${c.bookings}</td><td>${inr(c.spent)}</td>
+      <td><div class="row-actions"><button onclick="showToast('Opening profile for ${c.name}')">View</button></div></td></tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+
+function pgEnquiries(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Services</div><h1>Enquiries</h1></div></div>
+  <div class="panel"><div class="table-wrap">
+    <table class="admin-t"><tr><th>Name</th><th>Topic</th><th>Date</th><th></th></tr>
+    ${ENQUIRIES.map(e=>`<tr><td>${e.name}</td><td>${e.topic}</td><td>${e.date}</td>
+      <td><div class="row-actions"><button onclick="showToast('Replying to ${e.name}')">Reply</button></div></td></tr>`).join('')}
+    </table></div>
+  </div>`;
+}
+
+function pgPhotos(){
+  const labels = ["Storefront","Installation Team","CCTV Setup — Client A","Office Interior","Van & Equipment","Team Photo","Client Site — Chennai","Product Rack"];
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Website</div><h1>Photo Gallery</h1></div>
+    <button class="btn btn-primary" onclick="showToast('Upload dialog opened')">${icon('plus')} Upload Photos</button></div>
+  <div class="panel">
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;">These photos appear in the "Our Work" and "About Us" sections of the customer website.</p>
+    <div class="photo-grid">
+      <div class="photo-tile add" onclick="showToast('Upload dialog opened')">${icon('plus')}</div>
+      ${labels.map(l=>`<div class="photo-tile">${icon('img')}<div class="cap">${l}</div></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function pgContent(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Website</div><h1>Website Content</h1></div></div>
+  <div class="panel">
+    <h3 style="margin-bottom:12px;">Homepage Hero</h3>
+    <div class="field-lt"><label>Eyebrow Text</label><input value="SECURITY · SURVEILLANCE · NETWORKING"></div>
+    <div class="field-lt"><label>Headline</label><input value="Professional-grade protection for your home, office & business."></div>
+    <div class="field-lt"><label>Subtext</label><textarea>Genuine CCTV, NVR/DVR, PoE and networking equipment — sourced, installed and supported by AIMARTS across Tamil Nadu.</textarea></div>
+    <button class="btn btn-primary" onclick="showToast('Homepage content updated')">Save Changes</button>
+  </div>
+  <div class="panel">
+    <h3 style="margin-bottom:12px;">Contact & Business Info</h3>
+    <div class="form-grid">
+      <div class="field-lt"><label>WhatsApp Number</label><input placeholder="+91"></div>
+      <div class="field-lt"><label>Support Email</label><input placeholder="support@aimarts.in"></div>
+      <div class="field-lt"><label>Store Address</label><input placeholder="Business address"></div>
+      <div class="field-lt"><label>Working Hours</label><input placeholder="Mon–Sat, 9:30 AM – 7:00 PM"></div>
+    </div>
+    <button class="btn btn-primary" onclick="showToast('Contact details updated')">Save Changes</button>
+  </div>`;
+}
+
+function pgSettings(){
+  return `
+  <div class="admin-topbar"><div><div class="crumb">Website</div><h1>Settings</h1></div></div>
+  <div class="panel">
+    <h3 style="margin-bottom:12px;">Business & GST Details</h3>
+    <div class="form-grid">
+      <div class="field-lt"><label>Legal Business Name</label><input value="AIMARTS"></div>
+      <div class="field-lt"><label>GSTIN</label><input placeholder="33XXXXX0000X1ZX"></div>
+    </div>
+    <div class="field-lt"><label>Registered Address</label><input placeholder="Business address for invoices"></div>
+    <button class="btn btn-primary" onclick="showToast('Settings saved')">Save Settings</button>
+  </div>
+  <div class="panel">
+    <h3 style="margin-bottom:12px;">Admin Users</h3>
+    <div class="table-wrap"><table class="admin-t"><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr>
+      <tr><td>Admin User</td><td class="mono">admin@aimarts.in</td><td>Owner</td><td><span class="status-pill active">Active</span></td><td><div class="row-actions"><button>Edit</button></div></td></tr>
+    </table></div>
+    <button class="btn btn-outline" style="margin-top:12px;" onclick="showToast('Invite form opened')">${icon('plus')} Invite Staff Member</button>
+  </div>
+  <div class="panel">
+    <h3 style="margin-bottom:8px;">Danger Zone</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Changing the admin URL slug will immediately invalidate the current link. Update any bookmarks after saving.</p>
+    <button class="btn btn-danger" onclick="showToast('Contact your developer to rotate the admin URL')">Rotate Admin URL</button>
+  </div>`;
+}
+</script>
+</body>
+</html>
